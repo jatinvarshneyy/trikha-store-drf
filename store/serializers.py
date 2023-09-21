@@ -16,12 +16,11 @@ class CollectionSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'title', 'price', 'price_with_tax', 'collection']
+        fields = ['id', 'title', 'description', 'slug', 'inventory', 'unit_price', 'price_with_tax', 'collection']
 
     """ 
     - source = "unit_price": This indicates that when you serialize this field, you should use the value from the unit_price attribute of the model. In other words, you're telling the serializer to look for the value in the unit_price attribute and use it when serializing the price field.
     """
-    price = serializers.DecimalField(max_digits=6, decimal_places=2, source="unit_price")
     price_with_tax = serializers.SerializerMethodField(method_name='calculate_tax') 
     
     """

@@ -21,7 +21,7 @@ def product_list(request):
         serializer = ProductSerializer(data=request.data)
         # Validating Data with django -'exception=True' it automates validate the data and return the specific error for specific validation 
         serializer.is_valid(raise_exception=True)
-        serializer.validated_data
+        serializer.save()
         return Response(status=status.HTTP_201_CREATED)        
         
         """
@@ -36,11 +36,19 @@ def product_list(request):
         """
 
 # Product Detail View
-@api_view()
+@api_view(['GET', 'PUT'])
 def product_detail(request, id):
     product = get_object_or_404(Product, id=id)
-    serializer = ProductSerializer(product)
-    return Response(serializer.data)
+    if request.method == "GET":
+        serializer = ProductSerializer(product)
+        return Response(serializer.data)
+    
+    elif request.method == "PUT":
+        serializer = ProductSerializer(product, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(status=status.HTTP_201_CREATED)
+
 
     """
     - Error Handling and 404 Status Code: get_object_or_404 is a Django shortcut function commonly used to retrieve a single object from the database, and it raises a Http404 exception if the object is not found. This is a convenient way to handle the case where an object does not exist because it automatically triggers the 404 error response, which is a standard way to indicate to clients that the requested resource was not found.
