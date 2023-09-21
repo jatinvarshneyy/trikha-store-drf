@@ -1,0 +1,49 @@
+<!-- Extending The Base Template -->
+{% extends 'base.html' %}
+
+<!-- Block for Content - Starts Here -->
+{% block content %}
+
+<section class="py-5 text-center container">
+    <div class="row py-lg-5">
+      <div class="col-lg-6 col-md-8 mx-auto">
+        <h1 class="fw-light">Trikha Store | Products</h1>
+      </div>
+    </div>
+</section>
+
+<div class="container">
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Title</th>
+            <th scope="col">Description</th>
+            <th scope="col">Unit Price</th>
+            <th scope="col">Inventory</th>
+            <th scope="col">Collection</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% if products %}
+          {% for query in products %}
+          <tr>
+            <th scope="row">{{forloop.counter}}</th>
+            <td>{{query.title}}</td>
+            <td>{{query.description}}</td>
+            <td>{{query.unit_price}}</td>
+            <td>{{query.inventory}}</td>
+            <td>{{query.collection.title}}</td>
+          </tr>
+          {% endfor %}
+          {% else %}
+          <div class="alert alert-danger">
+            Sorry !
+          </div>
+          {% endif %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock content %}
+<!-- Block for Content - Ends Here -->
