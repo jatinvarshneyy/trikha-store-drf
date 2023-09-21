@@ -5,19 +5,21 @@ from .models import Product, Collection
 from .serializers import ProductSerializer, CollectionSerializer
 
 # Product List View
-@api_view()
+@api_view(['GET', 'POST'])
 def product_list(request):
-    queryset = Product.objects.select_related('collection').all()
-    serializer = ProductSerializer(queryset, many=True, context={'request': request})
-    return Response(serializer.data)
+    if request.method == "GET":
+        # When we wants to GET a list of products - We fetch all products from the database, and also include related collections.
+        queryset = Product.objects.select_related('collection').all()
+        # We create a serializer to convert this data into a format that can be sent as a response - We pass in the request object so that the serializer knows about the request details - When you have a queryset or a list of objects, you need to specify (many=True) to tell the serializer that you are dealing with multiple objects.
+        serializer = ProductSerializer(queryset, many=True, context={'request': request})
+        # Finally, we send back the serialized data as a response.
+        return Response(serializer.data)
 
-    """ 
-    - By using 'context={'request': request}' when initializing your serializer, you're passing in the request object from the view or API endpoint to the serializer. This allows the serializer to access information about the request, such as the user making the request, authentication details, query parameters, and more.
-
-    - The '.select_related('collection')' part of the query tells Django to fetch related data from the collection model in a single query, instead of making separate queries for each related item. This can significantly improve query performance, especially when dealing with a large amount of data, as it reduces the number of database queries needed.
-
-    - When you have a queryset or a list of objects, you need to specify (many=True) to tell the serializer that you are dealing with multiple objects.
-    """
+    elif request.method == "POST":
+        # When someone wants to POST (create) a new product - We create a serializer using the data that they sent in the request.
+        serializer = ProductSerializer(data=request.data)
+        # Instead of processing the data further for creating a new product (which is not shown here), for now, we simply respond with 'OKAY FOR NOW' to acknowledge the request.
+        return Response('OKAY FOR NOW')
 
 # Product Detail View
 @api_view()
@@ -44,6 +46,9 @@ def product_detail(request, id):
 # Collection Detail View
 @api_view()
 def collection_detail(request, pk):
+    # Try to retrieve the collection with the given 'pk' (primary key) from the database - If found, we get it; if it doesn't exist, it triggers a 404 error response.
     collection = get_object_or_404(Collection, id=pk)
+    # Create a serializer to format the collection's data into a response-friendly format.
     serializer = CollectionSerializer(collection)
+    # Finally, send back the serialized collection data as a response.
     return Response(serializer.data)
