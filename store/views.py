@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.db.models import Count
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
@@ -36,7 +37,7 @@ def product_list(request):
         """
 
 # Product Detail View
-@api_view(['GET', 'PUT'])
+@api_view(['GET', 'PUT', 'DELETE'])
 def product_detail(request, id):
     product = get_object_or_404(Product, id=id)
     if request.method == "GET":
@@ -48,6 +49,12 @@ def product_detail(request, id):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(status=status.HTTP_201_CREATED)
+    
+    elif request.method == "DELETE":
+        if product.orderitems.count() > 0:
+            return Response({'error': 'Product Cannot be allowed because it is associated with an order item'},status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        product.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
     """
@@ -65,12 +72,35 @@ def product_detail(request, id):
             return Response(status=status.HTTP_404_NOT_FOUND)
     """
 
+# Collection List View
+@api_view(['GET', 'POST'])
+def collection_list(request):
+    if request.method == "GET":
+        queryset = Collection.objects.annotate(products_count=Count('products'))
+        serializer = CollectionSerializer(queryset, many=True)
+        return Response(serializer.data)
+    elif request.method == "POST":
+        serializer = CollectionSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(status=status.HTTP_201_CREATED)
+    
 # Collection Detail View
-@api_view()
+@api_view(['GET', 'PUT', 'DELETE'])
 def collection_detail(request, pk):
-    # Try to retrieve the collection with the given 'pk' (primary key) from the database - If found, we get it; if it doesn't exist, it triggers a 404 error response.
-    collection = get_object_or_404(Collection, id=pk)
-    # Create a serializer to format the collection's data into a response-friendly format.
-    serializer = CollectionSerializer(collection)
-    # Finally, send back the serialized collection data as a response.
-    return Response(serializer.data)
+    collection = get_object_or_404(Collection.objects.annotate(products_count=Count('products')), id=pk)
+    if request.method == "GET":
+        serializer = CollectionSerializer(collection)
+        return Response(serializer.data)
+    
+    elif request.method == "PUT":
+        serializer = CollectionSerializer(collection, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(status=status.HTTP_201_CREATED)
+    
+    elif request.method == "DELETE":
+        if collection.products.count() > 0:
+            return Response({'error': 'Collection Cannot be allowed because it includes one or more products.'},status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        collection.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

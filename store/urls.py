@@ -7,5 +7,6 @@ urlpatterns = [
     path('product/<int:id>/', views.product_detail, name='product-detail'),
 
     # Collection Urls
+    path('collections/', views.collection_list, name='collection-list'),
     path('collection/<int:pk>/', views.collection_detail, name='collection-detail'),
 ]
