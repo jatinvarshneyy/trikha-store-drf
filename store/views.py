@@ -1,18 +1,23 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .models import Product
-from .serializers import ProductSerializer
+from .models import Product, Collection
+from .serializers import ProductSerializer, CollectionSerializer
 
 # Product List View
 @api_view()
 def product_list(request):
-    queryset = Product.objects.all()
-    """ 
-    - When you have a queryset or a list of objects, you need to specify many=True to tell the serializer that you are dealing with multiple objects.
-    """
-    serializer = ProductSerializer(queryset, many=True)
+    queryset = Product.objects.select_related('collection').all()
+    serializer = ProductSerializer(queryset, many=True, context={'request': request})
     return Response(serializer.data)
+
+    """ 
+    - By using 'context={'request': request}' when initializing your serializer, you're passing in the request object from the view or API endpoint to the serializer. This allows the serializer to access information about the request, such as the user making the request, authentication details, query parameters, and more.
+
+    - The '.select_related('collection')' part of the query tells Django to fetch related data from the collection model in a single query, instead of making separate queries for each related item. This can significantly improve query performance, especially when dealing with a large amount of data, as it reduces the number of database queries needed.
+
+    - When you have a queryset or a list of objects, you need to specify (many=True) to tell the serializer that you are dealing with multiple objects.
+    """
 
 # Product Detail View
 @api_view()
@@ -26,7 +31,7 @@ def product_detail(request, id):
     """
  
     """
-    - Handling the data with try-except block :
+    - Code - Handling the data with try-except block :
 
         try:
             product = Product.objects.get(id=id)
@@ -35,3 +40,10 @@ def product_detail(request, id):
         except product.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
     """
+
+# Collection Detail View
+@api_view()
+def collection_detail(request, pk):
+    collection = get_object_or_404(Collection, id=pk)
+    serializer = CollectionSerializer(collection)
+    return Response(serializer.data)
