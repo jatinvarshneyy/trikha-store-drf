@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework import status
 from .models import Product, Collection
 from .serializers import ProductSerializer, CollectionSerializer
 
@@ -18,8 +19,21 @@ def product_list(request):
     elif request.method == "POST":
         # When someone wants to POST (create) a new product - We create a serializer using the data that they sent in the request.
         serializer = ProductSerializer(data=request.data)
-        # Instead of processing the data further for creating a new product (which is not shown here), for now, we simply respond with 'OKAY FOR NOW' to acknowledge the request.
-        return Response('OKAY FOR NOW')
+        # Validating Data with django -'exception=True' it automates validate the data and return the specific error for specific validation 
+        serializer.is_valid(raise_exception=True)
+        serializer.validated_data
+        return Response(status=status.HTTP_201_CREATED)        
+        
+        """
+        - Code - Validating the data with if-else block :
+
+            serializer = ProductSerializer(data=request.data)  
+            if serializer.is_valid():
+                serializer.validated_data
+                return Response(status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        """
 
 # Product Detail View
 @api_view()
