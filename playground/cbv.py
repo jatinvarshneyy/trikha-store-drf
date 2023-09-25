@@ -325,3 +325,41 @@ class CollectionViewSet(ModelViewSet):
         if Product.objects.filter(collection_id=kwargs['pk']).count() > 0:
             return Response({'error': 'Collection cannot be deleted because it includes one or more products.'})
         return super().destroy(request, *args, **kwargs)
+    
+"""
+    ------------------> Nested Routers : ModelViewSet : Starts Here <--------
+
+    -> Very first we need to install drf-nested-routers using pip
+
+    from . import views
+    ----> Then importing routers from rest_framework_nested
+    from rest_framework_nested import routers
+
+    router = routers.DefaultRouter()
+    router.register('products', views.ProductViewSet)
+    router.register('collections', views.CollectionViewSet)
+
+    ----> First we need to define the parent router with parameter name - router:parent-router, 'products':parent_url, lookup:'product'
+    products_router = routers.NestedDefaultRouter(router, 'products', lookup='product')
+
+    ----> Then we register child viewset url with parent router url
+    products_router.register('reviews', views.ReviewViewSet, basename='product-reviews')
+
+    # UrlConf
+    urlpatterns = router.urls + products_router.urls
+
+    ------------------> Nested Routers : ModelViewSet : Ends Here <----------
+"""
+
+from . import views
+from rest_framework_nested import routers
+
+router = routers.DefaultRouter()
+router.register('products', views.ProductViewSet)
+router.register('collections', views.CollectionViewSet)
+
+products_router = routers.NestedDefaultRouter(router, 'products', lookup='product')
+products_router.register('reviews', views.ReviewViewSet, basename='product-reviews')
+
+# UrlConf
+urlpatterns = router.urls + products_router.urls
