@@ -1,11 +1,9 @@
 from typing import Any
 from django.contrib import admin, messages
-from django.contrib.contenttypes.admin import GenericTabularInline
 from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html, urlencode
 from .models import Product, Collection, Customer, Order, OrderItem, Review, Cart, CartItem
-from tags.models import Tag, TaggedItem
 
 # Custom Inventory Filter...
 class InventoryFilter(admin.SimpleListFilter):

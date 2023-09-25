@@ -43,19 +43,19 @@ class ProductSerializer(serializers.ModelSerializer):
     collection = serializers.PrimaryKeyRelatedField(
         queryset=Collection.objects.all()
     )
-    ------------------------------------------------------------------------------------------------------------------------
-
+    ----------------------------------------------------------------------------------------------------------------
+    
     2. StringRelatedField: This field returns a string representation of the related object. In the case of a foreign key relationship, it would typically return the human-readable attribute, such as the name or title, of the related object instead of its primary key. 
 
     Code:
     collection = serializers.StringRelatedField()
-    ------------------------------------------------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------------
 
     3. CollectionSerializer: The method called "Nested Object Serialization," involves creating a separate serializer for a related object and using it as a field within another serializer.
 
     Code:
     collection = CollectionSerializer()
-    ------------------------------------------------------------------------------------------------------------------------
+    ----------------------------------------------------------------------------------------------------------------
 
     4. HyperlinkedRelatedField: This method allows you to create a hyperlink to a specific view for related objects. You provide the reference to the view using the view_name parameter.
 
