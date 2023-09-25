@@ -18,10 +18,10 @@ class ProductViewSet(ModelViewSet):
     # Adding Imported SearchFilter in filter_backends
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = ProductFilter
-    ordering_fields = ['unit_price', 'last_update']
-
-    # This is how we use search fields
     search_fields = ['title', 'description', 'collection__title']
+    
+    # This is how we use sorting
+    ordering_fields = ['unit_price', 'last_update']
 
     def get_serializer_context(self):
         return {'request': self.request}
