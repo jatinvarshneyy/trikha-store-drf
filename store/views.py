@@ -4,12 +4,16 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework import status
 from .models import Product, Collection, OrderItem, Review
 from .serializers import ProductSerializer, CollectionSerializer, ReviewSerializer
+from .filters import ProductFilter
+from django_filters.rest_framework import DjangoFilterBackend
 
 # ProductViewSet
 class ProductViewSet(ModelViewSet):
-    queryset = Product.objects.select_related('collection').all()
+    queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ProductFilter
+
     def get_serializer_context(self):
         return {'request': self.request}
     
