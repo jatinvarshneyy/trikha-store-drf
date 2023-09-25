@@ -6,7 +6,9 @@ from decimal import Decimal
 class CollectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Collection
-        fields = ['id', 'title']
+        fields = ['id', 'title', 'products_count']
+
+    products_count = serializers.IntegerField(read_only=True)
 
     """
     - A Model Serializer in Django REST framework offers code optimization by automatically generating serialization fields based on the structure of a model. It eliminates the need to define each field manually, saving developers time and reducing redundancy. While Model Serializers can automatically include all fields from the model, developers have the flexibility to customize which fields are exposed in the serialized output. This customization ensures that only the necessary data is exposed, enhancing security and performance in API development.
