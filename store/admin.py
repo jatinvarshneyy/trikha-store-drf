@@ -55,7 +55,7 @@ class ProductAdmin(admin.ModelAdmin):
 # Registering Customer Model...
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ['first_name', 'last_name', 'membership', 'orders_count']
+    list_display = ['id', 'first_name', 'last_name', 'membership', 'orders_count']
     list_editable = ['membership']
     list_per_page = 10
     list_select_related = ['user']
