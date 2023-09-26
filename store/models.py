@@ -40,8 +40,8 @@ class Product(models.Model):
 # Customer Model Here...
 class Customer(models.Model):
     MEMBERSHIP_BRONZE = 'B'
-    MEMBERSHIP_SILVER = 'B'
-    MEMBERSHIP_GOLD = 'B'
+    MEMBERSHIP_SILVER = 'S'
+    MEMBERSHIP_GOLD = 'G'
 
     MEMBERSHIP_CHOICES = [
         (MEMBERSHIP_BRONZE, 'Bronze'),
@@ -84,6 +84,11 @@ class Order(models.Model):
     payment_status = models.CharField(max_length=1, choices=PAYMENT_STATUS_CHOICES, default=PAYMENT_STATUS_PENDING)
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
 
+    class Meta:
+        permissions = [
+            ('cancel_order', 'Can cancel order')
+        ]
+        
 # Order Item Model Here...
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.PROTECT)
