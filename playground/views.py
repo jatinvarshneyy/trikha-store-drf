@@ -3,7 +3,7 @@ from store.models import Product
 
 # Home View Functionality...
 def home(request):
-    queryset = Product.objects.all()
+    queryset = Product.objects.all() 
 
     context = {
         'queryset': queryset,
@@ -12,7 +12,7 @@ def home(request):
 
 # Products View Functionality...
 def products(request):
-    products = Product.objects.all()[:10]
+    products = Product.objects.all()
 
     context = {
         'products': products,
